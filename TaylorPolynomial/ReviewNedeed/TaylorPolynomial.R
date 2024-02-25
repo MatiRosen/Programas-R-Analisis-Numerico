@@ -25,6 +25,8 @@ TaylorP = function(expr, x0=0, n=2, xs, stepByStep = FALSE){
   }
 }
 
+# Example
+
 fn<-expression(sin(x)*cos(x))
 result = TaylorP(fn, x0 = pi/3, n = 5, xs = 0.3*pi, TRUE)
 View(result)

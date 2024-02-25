@@ -130,7 +130,7 @@ intH = function(A, xs, showTable = F, showExpr = F, showMatrix = F, showGraph = 
 }
 
 
-# Ejemplo
+# Example
 x=c(3,2,5,6,9)
 fx=c(27,6,135,234,783)
 dx=c(33,NA,85,NA,NA)
@@ -139,7 +139,7 @@ A=cbind(x,fx, dx, dxx) ; A
 
 intH(A, 4.5, T, T, T)
 
-# Ejemplo PPT
+# Example PPT
 x = c(-1, 1, 2)
 fx = c(3, 3, 6)
 dx = c(1,NA,-1)

@@ -1,3 +1,5 @@
+# Al archivo si le pondria el nombre completo (Algebraic)
+
 # Por un tema de hacer todos los programas iguales, pondría el ejemplo al
 # final de todo.
 

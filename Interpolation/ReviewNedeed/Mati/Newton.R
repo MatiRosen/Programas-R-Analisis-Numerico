@@ -82,7 +82,7 @@ intN = function(A, xs, showTable = F, showExpr = F, showMatrix = F, showGraph = 
 }
 
 
-# Ejemplo
+# Example
 x=c(1,2,3,4,5,6,7)
 fx=c(144,56,35,22,78,3,17)
 A=cbind(x,fx) ; A
