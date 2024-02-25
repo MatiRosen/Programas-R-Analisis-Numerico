@@ -1,3 +1,7 @@
+# Por un tema de hacer todos los programas iguales, pondría el ejemplo al
+# final de todo.
+
+# Ademas, usar siempre = o siempre <-. Yo no los mezclaria. (Yo uso siempre =) 
 x<-c(1,2,3,4,5,6,7)
 fx<-c(144,56,35,22,78,3,17)
 A=cbind(x,fx)
@@ -9,8 +13,14 @@ A=cbind(x,fx)
 # Si el argumento Expr=T devuelve el polinomio con 
 # los coeficientes redondeados a "dec" decimales
 
+# Por lo general no estamos poniendo comentarios de que es cada argumento, 
+# ya que esos iran en la wiki
+
 #******************************************
+# El showGraph lo pondria ultimo
 intA<-function(A,xs,showGraph=F,showExpr=F,showMatrix=F,dec=2){
+  # Tambien aca pondria nombres mas descriptivos.
+  # Por ej, m = col1, n = col2, l = length.
   m<-A[,1]
   n<-A[,2]
   l=length(m)
@@ -21,6 +31,7 @@ intA<-function(A,xs,showGraph=F,showExpr=F,showMatrix=F,dec=2){
     }
   }
   invCoef<-solve(M,as.matrix(n))
+  # Aca tambien, si a es un aux le pondria aux.
   a=xs
   fxs=0
   coef=rev(invCoef)
@@ -47,13 +58,19 @@ intA<-function(A,xs,showGraph=F,showExpr=F,showMatrix=F,dec=2){
     matrix = matrix(c(seq(0,l-1),coef), byrow=F,nrow = l, ncol = 2)
     colnames(matrix) = list("Degree", "Coeff")
     print("Coefficients Matrix: ")
-  print(matrix)
-  print("---------------------------------")
+    print(matrix)
+    
+    # Yo para las lineas uso el siguiente codigo:
+    # Primero, arriba de todo en la funcion, genero la siguiente variable:
+    # separatorLine = paste(rep("-", 10), collapse = "")
+    # despues, para que todos los prints sean iguales, los uso asi:
+    # print(separatorLine)
+    print("---------------------------------")
   }
 #*******************************************************   
   if(showExpr==T){
     print(" Expression : ")
-  rCoef=round(coef,dec)
+    rCoef=round(coef,dec)
   
   for (i in 1:length(rCoef)-1) {
     expr = as.character(rCoef[1])
@@ -62,6 +79,8 @@ intA<-function(A,xs,showGraph=F,showExpr=F,showMatrix=F,dec=2){
     }
   }
   cat("A(x) = ", expr, "\n")
+  
+  # Lo mismo que antes con este separador.
   print("---------------------------------")
   }
   

@@ -1,7 +1,9 @@
-intH = function(A, xs, showTable = FALSE, showExpr = FALSE, showMatrix = FALSE){
+intH = function(A, xs, showTable = F, showExpr = F, showMatrix = F, showGraph = F){
   A = A[order(A[, 1]), ]
   
   expandedTable = A
+  separatorLine = paste(rep("-", 10), collapse = "")
+  
   pos = 0
   for (i in 1:nrow(A)){
     for (j in ncol(A):3){
@@ -14,7 +16,8 @@ intH = function(A, xs, showTable = FALSE, showExpr = FALSE, showMatrix = FALSE){
             expandedTable = rbind(expandedTable, newRow)
             
           } else{
-            expandedTable = rbind(expandedTable[1:(i + pos), ], newRow, expandedTable[(i + 1 + pos):nrow(expandedTable), ])
+            expandedTable = rbind(expandedTable[1:(i + pos), ], newRow, 
+                                  expandedTable[(i + 1 + pos):nrow(expandedTable), ])
           }
           pos = pos + 1
         } else{
@@ -37,7 +40,7 @@ intH = function(A, xs, showTable = FALSE, showExpr = FALSE, showMatrix = FALSE){
   
   degree = nrow(expandedTable) - 1
   x = xs
-  dividedDifferences = expandedTable
+  divDiff = expandedTable
   
   for (i in 1:degree){
     result = rep(0, nrow(expandedTable))
@@ -45,74 +48,85 @@ intH = function(A, xs, showTable = FALSE, showExpr = FALSE, showMatrix = FALSE){
     for (j in 1:(nrow(expandedTable) - i)){
       currentCol = i + 1
       
-      if ((currentCol + 1) > ncol(dividedDifferences) || is.na(dividedDifferences[j, (currentCol + 1)])){
-        currentDifference = dividedDifferences[(j + 1), currentCol]
-        previousDifference = dividedDifferences[j, currentCol]
-        currentX = dividedDifferences[(j + i), 1]
-        previousX = dividedDifferences[j, 1]
+      if ((currentCol + 1) > ncol(divDiff) || is.na(divDiff[j, (currentCol + 1)])){
+        currentDiff = divDiff[(j + 1), currentCol]
+        previousDiff = divDiff[j, currentCol]
+        currentX = divDiff[(j + i), 1]
+        prevX = divDiff[j, 1]
         
-        result[j] = (currentDifference - previousDifference) / (currentX - previousX)
+        result[j] = (currentDiff - previousDiff) / (currentX - prevX)
       } else{
-        result[j] = dividedDifferences[j, (currentCol + 1)]
+        result[j] = divDiff[j, (currentCol + 1)]
       }
     }
     
     if (currentCol < ncol(expandedTable)){
-      dividedDifferences[, (currentCol + 1)] = result
+      divDiff[, (currentCol + 1)] = result
     } else{
-      dividedDifferences = cbind(dividedDifferences, result)
+      divDiff = cbind(divDiff, result)
     }
     
-    colnames(dividedDifferences)[i+2] = paste("DD", i)
+    colnames(divDiff)[i+2] = paste("DD", i)
   }
   
   if (showTable){
     print("Divided differences: ")
-    print(dividedDifferences)
-    print("------")
+    print(divDiff)
+    print(separatorLine)
   }
   
-  expr = as.character(dividedDifferences[1, 2])
-  matrix = matrix(c(0, dividedDifferences[1, 2], dividedDifferences[1, 2], dividedDifferences[1, 2]), nrow = nrow(expandedTable), ncol = 4, byrow = TRUE)
+  expr = as.character(divDiff[1, 2])
+  matrix = matrix(c(0, divDiff[1, 2], divDiff[1, 2], divDiff[1, 2]), 
+                  nrow = nrow(expandedTable), ncol = 4, byrow = TRUE)
   colnames(matrix) = list("Order", "Coef", "Coef value", "Aprox")
+  
   for (i in 1:degree) {
     term = "1"
     
     for (j in 1:i) {
-      term = paste(term, "*", paste("(x - ", dividedDifferences[j, 1], ")", sep = ""))
+      term = paste(term, "*", paste("(x - ", divDiff[j, 1], ")", sep = ""))
     }
     
-    expr = paste(expr, "+", as.character(dividedDifferences[1, i + 2]), "*", term)
+    expr = paste(expr, "+", as.character(divDiff[1, i + 2]), "*", term)
     aprox = eval(parse(text = expr))
-    coefValue = eval(parse(text = paste(as.character(dividedDifferences[1, i + 2]), "*", term)))
-    matrix[i+1,] = c(i, dividedDifferences[1, (i + 2)], coefValue, aprox)
+    coefValue = eval(parse(text = paste(as.character(divDiff[1, i + 2]), "*", term)))
+    matrix[i+1,] = c(i, divDiff[1, (i + 2)], coefValue, aprox)
   }
-  
+  expr = gsub(" 1 \\*", "", expr)
+
   if (showExpr){
     cat("P(x) = ", expr, "\n")
-    print("------")
+    print(separatorLine)
   }
   
   # Graphs
-  polynomial_function = function(x) {
+  polyFunc = function(x) {
     eval(parse(text = expr))
   }
   
-  curve = curve(polynomial_function, from = min(expandedTable[,1]), to = max(expandedTable[,1]))
-  
-  plot(expandedTable[,1], expandedTable[,2], pch = 21, cex = 1.5, lwd = 0.5, bg = "red", main = "Polinomio de Newton", xlab = "X", ylab = "Fx", ylim = c(min(curve$y), max(curve$y)))
-  curve(polynomial_function, from = min(expandedTable[,1]), to = max(expandedTable[,1]), col = "black", lwd = 2, add = TRUE)
-  points(xs, polynomial_function(xs), pch = 21, cex = 1.8, lwd = 0.9, bg = "yellow")
+  if (showGraph){
+    curve_results = curve(polyFunc, from = min(expandedTable[,1]), 
+                          to = max(expandedTable[,1]))
+    
+    plot(expandedTable[,1], expandedTable[,2], pch = 21, cex = 1.5, lwd = 0.5, 
+         bg = "red", main = "Hermite Polynomial", xlab = "X", ylab = "P(x)", 
+         ylim = c(min(curve_results$y), max(curve_results$y)))
+    
+    lines(curve_results, col = "black", lwd = 2)
+    
+    points(xs, polyFunc(xs), pch = 21, cex = 1.8, lwd = 0.9, bg = "yellow")
+  }
+
   
   if (showMatrix){
     print("Matrix: ")
     print(matrix)
-    print("------")
+    print(separatorLine)
   }
   
   cat("Aprox: ")
   
-  return(polynomial_function(xs))
+  return(polyFunc(xs))
 }
 
 
@@ -132,4 +146,4 @@ dx = c(1,NA,-1)
 dxx = c(NA, NA, 10)
 A = cbind(x,fx,dx, dxx) ; A
 
-intH(A,1.5,T,T)
+intH(A,1.5, T, T, T, T)

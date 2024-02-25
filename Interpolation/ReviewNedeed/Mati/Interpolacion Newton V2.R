@@ -45,7 +45,7 @@ intN = function(A, xs, showTable = F, showExpr = F, showMatrix = F, showGraph = 
     aprox = eval(parse(text = expr))
     matrix[i+1,] = c(i, divDiff[1, i + 2], aprox)
   }
-  expr = gsub("1 \\*", "", expr)
+  expr = gsub(" 1 \\*", "", expr)
   
   if (showExpr){
     cat("P(x) = ", expr, "\n")
@@ -58,7 +58,7 @@ intN = function(A, xs, showTable = F, showExpr = F, showMatrix = F, showGraph = 
   
   # Graphs
   if (showGraph){
-    curve_results <- curve(polyFunc, from = min(A[,1]), to = max(A[,1]))
+    curve_results = curve(polyFunc, from = min(A[,1]), to = max(A[,1]))
     
     plot(A[,1], A[,2], pch = 21, cex = 1.5, lwd = 0.5, bg = "red", 
          main = "Newton Polynomial", xlab = "X", ylab = "P(x)", 
@@ -83,8 +83,8 @@ intN = function(A, xs, showTable = F, showExpr = F, showMatrix = F, showGraph = 
 
 
 # Ejemplo
-x<-c(1,2,3,4,5,6,7)
-fx<-c(144,56,35,22,78,3,17)
+x=c(1,2,3,4,5,6,7)
+fx=c(144,56,35,22,78,3,17)
 A=cbind(x,fx) ; A
 
 intN(A, 5.5, T,T,T,T)
