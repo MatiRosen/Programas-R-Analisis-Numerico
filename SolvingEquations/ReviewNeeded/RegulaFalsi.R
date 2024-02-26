@@ -1,4 +1,4 @@
-bisection = function(expr, lowerLim, upperLim, iterations, digits = 15, stepByStep = F){
+regulaFalsi = function(expr, lowerLim, upperLim, iterations, digits = 15, stepByStep = F){
   options(digits=digits)
   
   if (lowerLim == upperLim)
@@ -10,12 +10,11 @@ bisection = function(expr, lowerLim, upperLim, iterations, digits = 15, stepBySt
   f = function(x){
     eval(expr)
   }
-
+  
   if (f(lowerLim) * f(upperLim) >= 0) 
     return("Bolzano's theorem is not verified.")
   
   separatorLine = paste(rep("-", 10), collapse = "")
-
   
   if(lowerLim >= upperLim){
     print("The interval limits are reversed! Fixing it...")
@@ -23,23 +22,25 @@ bisection = function(expr, lowerLim, upperLim, iterations, digits = 15, stepBySt
     lowerLim = upperLim
     upperLim = aux
   }
-  
-  counter = 1
-  result = matrix(0, ncol=2)
+
+  counter = 0
   fx = 1
+  result = matrix(0, ncol=2)
   
-  while(counter <= iterations &&  fx != 0){
-    x = (lowerLim + upperLim) / 2
+  while (counter < iterations && fx != 0){
+    fUpperLim = f(upperLim)
+    fLowerLim = f(lowerLim)
+    x = upperLim - fUpperLim * (upperLim - lowerLim) / (fUpperLim - fLowerLim)
     fx = f(x)
-    result = rbind(result, c(x, fx)) 
+    result = rbind(result, c(x, fx))
     
-    if(f(lowerLim) * f(x) < 0){
+    if (f(x) * f(lowerLim) < 0){
       upperLim = x
-    } else{
+    } else {
       lowerLim = x
     }
-      
-      counter = counter + 1
+    
+    counter = counter + 1
   }
   
   if (stepByStep){
@@ -53,4 +54,4 @@ bisection = function(expr, lowerLim, upperLim, iterations, digits = 15, stepBySt
 }
 
 # Example
-bisection(expression(x^2-2), 0, 2, 6, 15, T)
+regulaFalsi(expression(x^2-2), 0, 2, 6, 15, T)

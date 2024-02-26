@@ -1,4 +1,8 @@
-bisection = function(expr, lowerLim, upperLim, iterations, digits = 15, stepByStep = F){
+f = function(x, expr){
+  eval(expr)
+}
+
+newtonR = function(expr, lowerLim, upperLim, iterations, digits = 15, stepByStep = F){
   options(digits=digits)
   
   if (lowerLim == upperLim)
@@ -6,16 +10,12 @@ bisection = function(expr, lowerLim, upperLim, iterations, digits = 15, stepBySt
   
   if (iterations < 1) 
     return("Iterations should be greater than 0.")
-  
-  f = function(x){
-    eval(expr)
-  }
 
-  if (f(lowerLim) * f(upperLim) >= 0) 
+  
+  if (f(lowerLim, expr) * f(upperLim, expr) >= 0) 
     return("Bolzano's theorem is not verified.")
   
   separatorLine = paste(rep("-", 10), collapse = "")
-
   
   if(lowerLim >= upperLim){
     print("The interval limits are reversed! Fixing it...")
@@ -24,33 +24,39 @@ bisection = function(expr, lowerLim, upperLim, iterations, digits = 15, stepBySt
     upperLim = aux
   }
   
-  counter = 1
-  result = matrix(0, ncol=2)
-  fx = 1
+  derivate = D(expr, "x")
+  secondD = D(derivate, "x")
+  x = lowerLim
   
-  while(counter <= iterations &&  fx != 0){
-    x = (lowerLim + upperLim) / 2
-    fx = f(x)
-    result = rbind(result, c(x, fx)) 
+  if (f(upperLim, expr) * f(upperLim, secondD) > 0){
+    x = upperLim
+  }
+  
+  counter = 1
+  fx = f(x, expr)
+  result = matrix(c(x, fx), ncol=2)
+  
+  while (counter <= iterations && fx != 0){
+    xDerivate = D(expr, "x")
     
-    if(f(lowerLim) * f(x) < 0){
-      upperLim = x
-    } else{
-      lowerLim = x
-    }
-      
-      counter = counter + 1
+    x = x - (fx / f(x, xDerivate))
+    fx = f(x, expr)
+    result = rbind(result, c(x, fx))
+    
+    counter = counter + 1
   }
   
   if (stepByStep){
     colnames(result) = c("xi", "f(xi)")
     rownames(result) = c(0 : (nrow(result) - 1))
-    print(result[-1, ])
+    print(result)
     print(separatorLine)
   }
   
+
   return(result[nrow(result), 1])
 }
 
 # Example
-bisection(expression(x^2-2), 0, 2, 6, 15, T)
+newtonR(expression(x^2-2), 0, 2, 6, 15, T)
+
